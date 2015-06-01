@@ -1,0 +1,22 @@
+
+
+.friend {
+    color: red;
+}
+
+.username {
+    font-weight: bold;
+}
+
+
+.chat-box {
+    position: fixed;
+    bottom: 0;
+    background-color: #149c82;
+    opacity: .8;
+    padding: 10px;
+}
+
+.chat-form {
+    margin: 0 auto;
+}

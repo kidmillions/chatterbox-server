@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Chatterbox</title>
+
+    <link rel="stylesheet" href="styles/styles.css">
+    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css"> -->
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+
+    <!-- dependencies -->
+    <script src="bower_components/jquery/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/underscore/underscore-min.js"></script>
+    <script src="bower_components/backbone/backbone-min.js"></script>
+
+    <!-- your scripts -->
+    <script src="env/config.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/models.js"></script>
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Chatterbox</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+         <!--  <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul> -->
+          <!-- <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form> -->
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <h1>Friends</h1>
+          <div id="friends" class="nav nav-sidebar"></div>
+          <h1>Rooms</h1>
+          <div class="nav nav-sidebar">
+            <ul id="rooms">
+            </ul>
+          </div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Chats</h1>
+          <div id="chats"></div>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-fixed-bottom chat-box">
+      <div class="col-sm-6 col-sm-offset-3">
+        <form id="form" class="form-inline">
+          <div class="form-group chat-form">
+            <input type="text" class="form-control" id="text" size="35"/>
+            <input type="submit" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" id="clear">Clear Messages</button>
+            <button type="button" class="btn btn-primary" id="unfilter">Show All Messages</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+    <script>
+      $(document).ready(function() {
+        /******************
+        *  INIT
+        *******************/
+        app.cutoff = new Date(0);
+        app.messages = new Messages();
+        app.messages.fetch();
+        app.messagesView = new MessagesView({ collection: app.messages });
+        app.friends = new Friends();
+        app.friendsView = new FriendsView({ model: app.friends });
+        app.rooms = new Rooms();
+        app.rooms.getRooms();
+        app.roomsView = new RoomsView({el: $("#rooms"), collection: app.rooms });
+
+        $('#chats').html(app.messagesView.render());
+        $('#form').on('submit', function(e) {
+          console.log("submitted")
+          e.preventDefault();
+          var message = new Message();
+          message.set('username', window.username);
+          message.set('text', $("#text").val());
+          app.send(message.attributes);
+          $('#text').val('');
+        });
+
+        $('#clear').on('click', function(e) {
+          app.cutoff = Date.now();
+          e.preventDefault();
+          $('#chats').empty();
+        });
+
+        $('#chats').on('click', '.username', function() {
+          var username = $(this).text();
+          app.messages.query = {'username': username};
+
+          if(!app.friends.findWhere({'username': username})) {
+            var friend = new Friend(username);
+            app.friends.push(friend);
+          }
+        });
+
+        $('#unfilter').on('click', function() {
+          app.messages.query = '';
+        });
+
+        setInterval(function() {
+          var currentQuery = app.messages.query;
+          var currentURL = app.messages.url;
+          if( currentQuery !== '') {
+            var urlString = 'https://api.parse.com/1/classes/chatterbox?where=' + encodeURIComponent(JSON.stringify(currentQuery));
+            app.messages.url = urlString;
+          }
+          else {
+            app.messages.url = 'https://api.parse.com/1/classes/chatterbox';
+          }
+          app.messages.fetch();
+          $('#chats').empty();
+          $('#chats').html(app.messagesView.render());
+          $('#friends').html(app.friendsView.render());
+        }, 500);
+      });
+    </script>
+
+
+  </body>
+</html>
