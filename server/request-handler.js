@@ -19,7 +19,6 @@ this file and include it in basic-server.js so that it actually works.
 var dataStorage = {results:[]};
 
 
-
     // var stubMsg = {
     //   username: 'Jono',
     //   message: 'Do my bidding!'
@@ -28,75 +27,72 @@ var dataStorage = {results:[]};
 
 
 var requestHandler = function(request, response) {
-  // Request and Response come from node's http module.
-  //
-  // They include information about both the incoming request, such as
-  // headers and URL, and about the outgoing response, such as its status
-  // and content.
-  //
-  // Documentation for both request and response can be found in the HTTP section at
-  // http://nodejs.org/documentation/api/
-  // Do some basic logging.
 
-// var requestUrl = url.parse(request.url, true);
-// console.log(requestUrl);
   var uri = url.parse(request.url).pathname;
   var filename = path.normalize('.' + request.url);
   var headers = defaultCorsHeaders;
-  headers['Content-Type'] = "application/JSON";
-  request.setEncoding('utf8');
-
-  console.log('URI: ' + uri);
-
-  console.log('filename: ' + filename);
-
-  // path.exists(filename, function(exists) {
-    // console.log('exists: ' + exists);
-    if (!(request.url === '/classes/messages' || request.url === '/')) {
-      response.writeHead(404, headers);
-      response.write('404 error');
-      console.log('should be 404')
-      response.end();
-      return;
-    }
-  // });
-
-  // console.log(data);
   var statusCode = 200;
-
   var res = '';
+
+
+
+  request.setEncoding('utf8');
+  headers['Content-Type'] = "application/JSON";
+
+  if (!(request.url === '/classes/messages' || request.url === '/')) {
+    response.writeHead(404, headers);
+    response.write('404 error');
+    console.log('should be 404')
+    response.end();
+    return;
+  }
+
   if (request.method === "GET") {
-    res = JSON.stringify(dataStorage);
+
+
+
+
+
+      // if (err) { throw err };
+      // var readBuffer = new Buffer(1024);
+      // var bufferOffset = 0;
+      // var bufferLength = readBuffer.length;
+      // var filePosition = 100;
+      // fs.read(fd, readBuffer, bufferOffset, bufferLength, filePosition, function read(err, readBytes) {
+      //   if (err) {throw err;}
+      //   console.log('just read ' + readBytes + ' bytes');
+      //   if (readBytes > 0) {
+      //     console.log(readBuffer.slice(0, readBytes));
+      //     res = JSON.stringify(readBuffer.slice(0, readBytes));
+      //     console.log(res);
+      //   }
+      // });
+      // res.on('data', function(chunk) {
+      //   console.log(chunk);
+      // })
+    // });
+
+
+
+
+    // res = JSON.stringify(dataStorage);
   }
 
   if (request.method === "POST") {
-    console.log('post')
-
     request.on('data', function(chunk) {
-      // need to parse to store in the storage
+      // boot up the data.js file
       dataStorage.results.push(JSON.parse(chunk));
-    })
+    });
     statusCode = 201;
   }
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   response.writeHead(statusCode, headers);
-  console.log(res);
   response.write(res);
-
   response.end();
 };
 
-// These headers will allow Cross-Origin Resource Sharing (CORS).
-// This code allows this server to talk to websites that
-// are on different domains, for instance, your chat client.
-//
-// Your chat client is running from a url like file://your/chat/client/index.html,
-// which is considered a different domain.
-//
-// Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
@@ -104,7 +100,7 @@ var defaultCorsHeaders = {
   "access-control-max-age": 10 // Seconds.
 };
 
-var name = 'nodeJS';
+var name = 'nodeJS Server Written by Austin and Chris';
 exports.name = name;
 exports.requestHandler = requestHandler;
 exports.defaultCorsHeaders = defaultCorsHeaders;

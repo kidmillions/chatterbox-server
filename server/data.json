@@ -1,0 +1,14 @@
+{
+  "results": [
+    {
+      "username": "Austin",
+      "text": "Hi",
+      "roomname": "lobby"
+    },
+    {
+      "username": "Chris",
+      "text": "Hi",
+      "roomname": "lobby"
+    },
+  ]
+}
