@@ -27,9 +27,8 @@ var dataStorage = {results:[]};
 
 
 var requestHandler = function(request, response) {
-
   var uri = url.parse(request.url).pathname;
-  var filename = path.normalize('.' + request.url);
+  // var filename = path.normalize('.' + request.url);
   var headers = defaultCorsHeaders;
   var statusCode = 200;
   var res = '';
@@ -49,31 +48,27 @@ var requestHandler = function(request, response) {
 
   if (request.method === "GET") {
 
+    var path = './data.json'
+    fs.open(path, 'r', function(err, fd) {
+      var readStream = fs.createReadStream(null, {fd: fd, encoding: 'utf8'});
+      var string = ''
+      readStream.on('data', function(chunk) {
 
+          string += chunk;
+          // response.write(JSON.stringify(chunk));
+          // response.write(JSON.stringify(chunk), 'utf8');
+          // console.log(response);
+          // response.write(JSON.stringify(chunk));
 
+        });
+      readStream.on('end', function() {
+        response.writeHead(statusCode, headers);
+        console.log(string);
+        response.end(string);
+        return;
+      })
 
-
-      // if (err) { throw err };
-      // var readBuffer = new Buffer(1024);
-      // var bufferOffset = 0;
-      // var bufferLength = readBuffer.length;
-      // var filePosition = 100;
-      // fs.read(fd, readBuffer, bufferOffset, bufferLength, filePosition, function read(err, readBytes) {
-      //   if (err) {throw err;}
-      //   console.log('just read ' + readBytes + ' bytes');
-      //   if (readBytes > 0) {
-      //     console.log(readBuffer.slice(0, readBytes));
-      //     res = JSON.stringify(readBuffer.slice(0, readBytes));
-      //     console.log(res);
-      //   }
-      // });
-      // res.on('data', function(chunk) {
-      //   console.log(chunk);
-      // })
-    // });
-
-
-
+      });
 
     // res = JSON.stringify(dataStorage);
   }
@@ -87,7 +82,7 @@ var requestHandler = function(request, response) {
   }
 
   console.log("Serving request type " + request.method + " for url " + request.url);
-
+  console.log(res);
   response.writeHead(statusCode, headers);
   response.write(res);
   response.end();

@@ -18,13 +18,3 @@ server.listen(port, ip);
 server.on('error', function(err) {
   console.log('Server error', err.message);
 })
-
-var path = './data.json'
-fs.open(path, 'r', function(err, fd) {
-      var readStream = fs.createReadStream(null, {fd: fd, encoding: 'utf8'});
-      readStream.on('data', function(chunk) {
-          console.log('file changed');
-          console.log(chunk);
-        });
-
-      });
