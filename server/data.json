@@ -10,5 +10,10 @@
       "text": "Hi",
       "roomname": "lobby"
     },
+    {
+      "username": "Bob",
+      "text": "Hi",
+      "roomname": "lobby"
+    },
   ]
 }
