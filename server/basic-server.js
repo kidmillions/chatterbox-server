@@ -1,3 +1,8 @@
+var handler = require('./request-handler.js');
+var static = require('node-static');
+var requests = require('request');
+console.log(handler.name);
+
 /* Import node's http module: */
 var http = require("http");
 
@@ -14,21 +19,29 @@ var port = 3000;
 // special address that always refers to localhost.
 var ip = "127.0.0.1";
 
-
+var fileServer = new static.Server('../client');
 
 // We use node's http module to create a server.
-//
+
 // The function we pass to http.createServer will be used to handle all
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
-var server = http.createServer(handleRequest);
+var server = http.createServer(handler.requestHandler
+  // request.once('end', function () {
+  //         fileServer.serve(request, response);
+  //         // console.log('served files');
+  //     }).resume();
+
+  // request.on('GET', handler.requestHandler);
+);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
 
-// To start this server, run:
-//
-//   node basic-server.js
+server.on('error', function(err) {
+  console.log('Server error', err.message);
+})
+//   node basic-server.js;
 //
 // on the command line.
 //
