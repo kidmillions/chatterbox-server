@@ -7,9 +7,7 @@ var headers = {
 };
 
 var exports = module.exports = {};
-var url = require('url');
 var fs = require('fs');
-var path = require('path');
 // var dataStorage = {results:[]};
 var objectId = 1;
 
@@ -22,15 +20,26 @@ var objectId = 1;
 var actions = {
   'GET': function (request, response) {
     fs.readFile('./data.json', {encoding: 'utf8'}, function (err, data) {
-
       sendResponse(response, data, 200);
     });
 
   },
   'POST': function (request, response) {
     collectData(request, function(message) {
-      dataStorage['results'].push(message);
-      sendResponse(response, {objectId: objectId}, 201);
+      fs.readFile('./data.json', {encoding: 'utf8'}, function (err, data) {
+        console.log(data);
+        var newData = JSON.parse(data);
+        console.log(newData);
+        newData['results'].push(JSON.parse(message));
+        fs.writeFile('./data.json', JSON.stringify(newData), function(err) {
+          if (err) {
+            console.log('it doesnt work');
+          }
+        });
+      });
+
+      // dataStorage['results'].push(message);
+      sendResponse(response, 'sent', 201);
       objectId++;
     });
   },
@@ -39,10 +48,13 @@ var actions = {
    }
 };
 
+
+
+
+
 var sendResponse = function(response, data, statusCode) {
   var statusCode = statusCode || 200;
   response.writeHead(statusCode, headers);
-  console.log(data);
   response.end(data);
 };
 
@@ -53,7 +65,7 @@ var collectData = function(request, callback) {
     data += chunk;
   });
   request.on('end', function() {
-    callback(JSON.parse(data));
+    callback(data);
   });
 };
 
