@@ -4,6 +4,10 @@ var Message = Backbone.Model.extend({
   //   this.set('text', text);
   //   this.set('roomname', roomname);
   // }
+  defaults: {
+    username: 'Austin',
+    roomname: 'HR'
+  }
 
 });
 
@@ -23,12 +27,9 @@ var MessageView = Backbone.View.extend({
 
 var Messages = Backbone.Collection.extend({
   model: Message,
-  url: 'http://127.0.0.1:3000',
-  url: 'https://api.parse.com/1/classes/chatterbox',
+  url: 'http://127.0.0.1:3000/classes/messages',
   query: '',
   parse: function(data) {
-
-    //pass the collection rooms to the room model
     return data.results;
   }
 });
@@ -41,12 +42,12 @@ var MessagesView = Backbone.View.extend({
     var html = '<div>' + '</div>';
     this.$el.html(html);
     this.$el.find('div').append(this.collection.map(function(message) {
-      var messageDate = new Date(message.get('createdAt'));
-
-      if(messageDate >= app.cutoff) {
+      // var messageDate = new Date(message.get('createdAt'));
+      // debugger;
+      // if(messageDate >= app.cutoff) {
         var messageView = new MessageView({model: message});
         return messageView.render();
-      }
+      // }
     }));
     return this.$el;
   }
@@ -77,7 +78,7 @@ var FriendsView = Backbone.View.extend({
 });
 
 var Room = Backbone.Model.extend({
-  url: 'http://127.0.0.1:3000',
+  url: 'http://127.0.0.1:3000/classes/messages',
   defaults: {
     roomname: 'lobby',
     name: 'lobby'
@@ -91,7 +92,7 @@ var roomList = [];
 
 var Rooms = Backbone.Collection.extend({
   model: Room,
-  url: 'http://127.0.0.1:3000',
+  url: 'http://127.0.0.1:3000/classes/messages',
   getRooms: function() {
     this.fetch();
   },

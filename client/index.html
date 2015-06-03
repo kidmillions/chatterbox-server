@@ -8,8 +8,8 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
-
+<!--     <link rel="icon" href="../../favicon.ico">
+ -->
     <title>Chatterbox</title>
 
     <link rel="stylesheet" href="styles/styles.css">
@@ -80,6 +80,7 @@
         <form id="form" class="form-inline">
           <div class="form-group chat-form">
             <input type="text" class="form-control" id="text" size="35"/>
+            <input type='text' class='form-control' id='username' placeholder='username' />
             <input type="submit" class="btn btn-primary">
             <button type="button" class="btn btn-primary" id="clear">Clear Messages</button>
             <button type="button" class="btn btn-primary" id="unfilter">Show All Messages</button>
@@ -110,8 +111,11 @@
           var message = new Message();
           message.set('username', window.username);
           message.set('text', $("#text").val());
-          app.send(message.attributes);
+          message.set('username', $('#username').val());
+          console.log('attributes: ' + JSON.stringify(message.toJSON()));
+          app.send(message.toJSON());
           $('#text').val('');
+          $('#username').val('');
         });
 
         $('#clear').on('click', function(e) {
@@ -136,19 +140,20 @@
 
         setInterval(function() {
           var currentQuery = app.messages.query;
-          var currentURL = app.messages.url;;
+          var currentURL = app.messages.url;
           if( currentQuery !== '') {
-            var urlString = 'http://127.0.0.1:3000' + encodeURIComponent(JSON.stringify(currentQuery));
+            var urlString = 'http://127.0.0.1:3000/classes/messages' + encodeURIComponent(JSON.stringify(currentQuery));
             app.messages.url = urlString;
           }
           else {
-            app.messages.url = 'http://127.0.0.1:3000';
+            app.messages.url = 'http://127.0.0.1:3000/classes/messages';
           }
           app.messages.fetch();
+          console.log(app.messages)
           $('#chats').empty();
           $('#chats').html(app.messagesView.render());
           $('#friends').html(app.friendsView.render());
-        }, 500);
+        }, 2000);
       });
     </script>
 

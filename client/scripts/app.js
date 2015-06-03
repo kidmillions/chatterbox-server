@@ -1,6 +1,6 @@
 // YOUR CODE HERE:
 var app = {};
-app.server = 'http://127.0.0.1:3000';
+app.server = 'http://127.0.0.1:3000/classes/messages';
 app.init = function() {
 
 };
@@ -13,6 +13,7 @@ app.send = function(message) {
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
+      console.log(data);
     },
     error: function (data) {
       // see: https://developer.mozilla.org/en-US/docs/Web/API/console.error
