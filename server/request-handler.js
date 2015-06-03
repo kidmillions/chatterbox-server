@@ -10,7 +10,7 @@ var exports = module.exports = {};
 var url = require('url');
 var fs = require('fs');
 var path = require('path');
-var dataStorage = {results:[]};
+// var dataStorage = {results:[]};
 var objectId = 1;
 
     // var stubMsg = {
@@ -21,7 +21,11 @@ var objectId = 1;
 
 var actions = {
   'GET': function (request, response) {
-    sendResponse(response, dataStorage, 200);
+    fs.readFile('./data.json', {encoding: 'utf8'}, function (err, data) {
+
+      sendResponse(response, data, 200);
+    });
+
   },
   'POST': function (request, response) {
     collectData(request, function(message) {
@@ -38,7 +42,8 @@ var actions = {
 var sendResponse = function(response, data, statusCode) {
   var statusCode = statusCode || 200;
   response.writeHead(statusCode, headers);
-  response.end(JSON.stringify(data));
+  console.log(data);
+  response.end(data);
 };
 
 

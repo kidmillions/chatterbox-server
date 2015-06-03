@@ -14,6 +14,11 @@
       "username": "Bob",
       "text": "Hi",
       "roomname": "lobby"
+    },
+    {
+      "username": "Ronald McDonald",
+      "text": "Yo",
+      "roomname": "lobby2"
     }
   ]
 }
